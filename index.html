@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ISS Telemetry Proxy</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+  <script>
+    window.onload = function() {
+      require(["https://cdn.jsdelivr.net/npm/lightstreamer-client-web/lightstreamer.min.js"], function() {
+        var client = new Lightstreamer.LightstreamerClient("https://push.lightstreamer.com", "ISSLIVE");
+        client.connect();
+
+        var items = [
+          "AIRLOCK000001", "NODE2000001"
+        ];
+        var fields = ["Value", "TimeStamp"];
+
+        var output = document.getElementById("telemetry");
+        var sub = new Lightstreamer.Subscription("MERGE", items, fields);
+        sub.addListener({
+          onItemUpdate: function(update) {
+            var result = {
+              name: update.getItemName(),
+              value: update.getValue("Value"),
+              time: update.getValue("TimeStamp")
+            };
+            var div = document.createElement("div");
+            div.textContent = JSON.stringify(result);
+            output.insertBefore(div, output.firstChild);
+          }
+        });
+        client.subscribe(sub);
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>ISS Telemetry Proxy</h1>
+  <p>Na tej stronie pojawiają się aktualne dane telemetryczne ISS.</p>
+  <div id="telemetry"></div>
+</body>
+</html>
