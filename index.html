@@ -2,24 +2,47 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>ISS Proxy test</title>
+  <title>ISS Live Telemetry - Wybrane Parametry</title>
   <script src="https://cdn.jsdelivr.net/npm/lightstreamer-client-web/lightstreamer.min.js"></script>
 </head>
 <body>
-  <pre id="data">Ładuję dane...</pre>
+  <h2>Dane ISS (na żywo)</h2>
+  <ul>
+    <li>Urine Tank: <span id="urine">...</span> %</li>
+    <li>Waste Water Tank: <span id="waste">...</span> %</li>
+    <li>Potable Water Tank: <span id="potable">...</span> %</li>
+    <li>O2 Tank: <span id="o2">...</span> %</li>
+    <li>N2 Tank: <span id="n2">...</span> %</li>
+    <li>Cabin Pressure: <span id="press">...</span> mmHg</li>
+    <li>CO2 Partial Pressure: <span id="co2">...</span></li>
+    <li>O2 Partial Pressure: <span id="o2pp">...</span></li>
+    <li>Temperature (Node 3): <span id="temp">...</span></li>
+  </ul>
   <script>
     var client = new LightstreamerClient("https://push.lightstreamer.com", "ISSLIVE");
     client.connect();
 
-    var sub = new Subscription("MERGE", ["USLAB000053"], ["Value","TimeStamp"]);
-    sub.addListener({
-      onItemUpdate: function(update) {
-        document.getElementById('data').textContent =
-          "Wartość: " + update.getValue("Value") + "\n" +
-          "Czas: " + update.getValue("TimeStamp");
-      }
+    var params = [
+      { code: "NODE3000011", elem: "urine" },  
+      { code: "NODE3000012", elem: "waste" },  
+      { code: "NODE3000013", elem: "potable" },  
+      { code: "USLAB000053", elem: "o2" },     
+      { code: "USLAB000055", elem: "n2" },    
+      { code: "USLAB000064", elem: "press" },  
+      { code: "USLAB000062", elem: "co2" },    
+      { code: "USLAB000061", elem: "o2pp" },  
+      { code: "NODE3000004", elem: "temp" }    
+    ];
+
+    params.forEach(function(p) {
+      var sub = new Subscription("MERGE", [p.code], ["Value", "TimeStamp"]);
+      sub.addListener({
+        onItemUpdate: function(update) {
+          document.getElementById(p.elem).textContent = update.getValue("Value");
+        }
+      });
+      client.subscribe(sub);
     });
-    client.subscribe(sub);
   </script>
 </body>
 </html>
