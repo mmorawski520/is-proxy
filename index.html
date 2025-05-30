@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ISS Telemetry Proxy</title>
+  <title>Lightstreamer Test</title>
   <script src="https://cdn.jsdelivr.net/npm/lightstreamer-client-web/lightstreamer.min.js"></script>
 </head>
 <body>
@@ -12,7 +12,7 @@
     window.onload = function() {
       var client = new Lightstreamer.LightstreamerClient("https://push.lightstreamer.com", "ISSLIVE");
       client.connect();
-      var items = ["AIRLOCK000001","AIRLOCK000002"];
+      var items = ["AIRLOCK000001"];
       var fields = ["Value", "TimeStamp"];
       var output = document.getElementById("telemetry");
       var sub = new Lightstreamer.Subscription("MERGE", items, fields);
